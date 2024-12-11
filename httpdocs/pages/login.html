@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Fred's Free Speech</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script>
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Show success message and redirect if login is successful
+            if (urlParams.has('success')) {
+                alert('Login successful!');
+                window.location.href = 'home.php'; // Redirect to home page
+            }
+
+            // Show error message if there was an error in login
+            if (urlParams.has('error')) {
+                const errorMsg = urlParams.get('error').replace(/\+/g, ' ');
+                alert(errorMsg);
+            }
+
+            // Show registration success message if applicable
+            if (urlParams.has('success') && urlParams.get('success') === 'register') {
+                alert('Registration successful! You can now log in.');
+            }
+        }
+    </script>
+</head>
+
+<body class="centered-page">
+    <div class="form-container">
+        <h2>Login</h2>
+        <form action="../php/login_creds.php" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p>Don’t have an account?
+            <a href="register.html"><button type="button">Sign Up</button></a>
+        </p>
+        <p>Admin?
+            <a href="admin_login.html"><button type="button">Admin Login</button></a>
+        </p>
+    </div>
+</body>
+
+</html>

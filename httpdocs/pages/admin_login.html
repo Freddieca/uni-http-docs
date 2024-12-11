@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Fred's Free Speech</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script>
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Show success message and redirect if login is successful
+            if (urlParams.has('success')) {
+                alert('Login successful!');
+                window.location.href = 'admin.php'; // Redirect to admin dashboard
+            }
+
+            // Show error message if there was an error in login
+            if (urlParams.has('error')) {
+                const errorMsg = urlParams.get('error').replace(/\+/g, ' ');
+                alert(errorMsg);
+            }
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</head>
+
+<body class="centered-page">
+    <div class="form-container">
+        <h2>Admin Login</h2>
+        <form action="../php/admin_login_creds.php" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+        <button onclick="goBack()">Return</button>
+    </div>
+</body>
+
+</html>

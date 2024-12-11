@@ -1,0 +1,115 @@
+/* General Styles */
+body {
+    background-color: #003153;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Centered Page for Login and Register */
+.centered-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Navbar for Logged-In Pages */
+.navbar {
+    text-align: center;
+    background-color: #333;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    /* Ensure navbar stays on top */
+}
+
+.navbar a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    color: #ddd;
+}
+
+/* Header Adjustment */
+header {
+    padding-top: 30px;
+    /* Adjust this value as needed to prevent overlap */
+    text-align: center;
+}
+
+/* Form Container Styles (Login/Register) */
+.form-container {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Input & Button Styles */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+button {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 4px;
+}
+
+/* Add black outline to input fields */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    outline: 2px solid black;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    outline: 2px solid black;
+}
+
+/* Button Styles */
+button {
+    background-color: #005f99;
+    color: white;
+    cursor: pointer;
+    display: inline-block; /* Ensure buttons are only as wide as their content */
+    width: auto; /* Override the width to auto */
+    padding: 10px 20px; /* Add padding for better appearance */
+}
+
+button:hover {
+    background-color: #004080;
+}
+
+/* Home Page Layout (Logged-in Page) */
+main {
+    padding-top: 20px;
+    /* Adjusted for fixed navbar */
+    padding: 20px;
+    background-color: #fff;
+    color: #333;
+    min-height: 90vh;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+}
