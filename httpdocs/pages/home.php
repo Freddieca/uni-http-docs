@@ -1,5 +1,5 @@
 <?php
-// Start the session and include the database connection
+// Start the session and include the database connection fr
 session_start();
 include('../includes/db_connection.php');
 ?>
