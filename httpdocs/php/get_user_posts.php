@@ -1,5 +1,4 @@
 <?php
-// Start session and include the database connection
 session_start();
 include('../includes/db_connection.php');
 
@@ -22,23 +21,17 @@ $stmt->fetch();
 $stmt->close();
 
 // Fetch posts made by this user
-$sql = "SELECT posts.post_id, posts.title, posts.description, posts.image, posts.location, posts.created_at, users.username, users.profile_picture FROM posts JOIN users ON posts.user_id = users.user_id WHERE posts.user_id = ? ORDER BY posts.created_at DESC";
+$sql = "SELECT post_id, title, description, image, location, created_at, likes, comments FROM posts WHERE user_id = ? ORDER BY created_at DESC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $stmt->store_result();
-$stmt->bind_result($post_id, $title, $description, $image, $location, $created_at, $username, $profile_picture);
+$stmt->bind_result($post_id, $title, $description, $image, $location, $created_at, $likes, $comments_json);
 
 if ($stmt->num_rows > 0) {
     while ($stmt->fetch()) {
         echo "<div class='post'>";
-        echo "<p>";
-        if (!empty($profile_picture)) {
-            echo "<img src='../uploads/" . htmlspecialchars($profile_picture) . "' alt='Profile Picture' style='width: 50px; height: 50px; border-radius: 50%;'>";
-        } else {
-            echo "<img src='../assets/images/default-profile.png' alt='Default Profile Picture' style='width: 50px; height: 50px; border-radius: 50%;'>";
-        }
-        echo "<strong>" . htmlspecialchars($title) . "</strong> by " . htmlspecialchars($username) . "</p>";
+        echo "<p><strong>" . htmlspecialchars($title) . "</strong></p>";
         echo "<p>" . htmlspecialchars($description) . "</p>";
         if ($image) {
             echo "<img src='../uploads/" . htmlspecialchars($image) . "' alt='Post Image' style='width: 100px; height: 100px;'>";
@@ -47,7 +40,25 @@ if ($stmt->num_rows > 0) {
             echo "<p><strong>Location:</strong> " . htmlspecialchars($location) . "</p>";
         }
         echo "<p><small>Posted on: " . htmlspecialchars($created_at) . "</small></p>";
-        echo "<button onclick='deletePost(" . htmlspecialchars($post_id) . ")'>Delete</button>";
+
+        // Like button
+        echo "<button onclick='likePost(" . htmlspecialchars($post_id) . ")'>&#x2764;</button>";
+        echo "<span id='like-count-" . htmlspecialchars($post_id) . "'>" . htmlspecialchars($likes) . "</span> Likes";
+
+        // Comment section
+        $comments = json_decode($comments_json, true);
+        echo "<div class='comments' id='comments-" . htmlspecialchars($post_id) . "'>";
+        if ($comments) {
+            foreach ($comments as $comment) {
+                echo "<p><strong>" . htmlspecialchars($comment['username']) . ":</strong> " . htmlspecialchars($comment['comment']) . " <small>(" . htmlspecialchars($comment['created_at']) . ")</small></p>";
+            }
+        }
+        echo "</div>";
+        echo "<form onsubmit='return addComment(event, " . htmlspecialchars($post_id) . ")'>";
+        echo "<input type='text' id='comment-input-" . htmlspecialchars($post_id) . "' placeholder='Add a comment...' required>";
+        echo "<button type='submit'>Comment</button>";
+        echo "</form>";
+
         echo "</div>";
     }
 } else {
@@ -58,23 +69,44 @@ $stmt->close();
 $conn->close();
 ?>
 <script>
-function deletePost(postId) {
-    if (confirm("Are you sure you want to delete this post?")) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "../php/delete_post.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                var response = JSON.parse(xhr.responseText);
-                if (response.success) {
-                    alert("Post deleted successfully!");
-                    loadUserPosts();
-                } else {
-                    alert("Failed to delete post: " + response.message);
-                }
+function likePost(postId) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "../php/like_post.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.success) {
+                document.getElementById("like-count-" + postId).innerText = response.like_count;
+            } else {
+                alert("Failed to like post: " + response.message);
             }
-        };
-        xhr.send("post_id=" + postId);
-    }
+        }
+    };
+    xhr.send("post_id=" + postId);
+}
+
+function addComment(event, postId) {
+    event.preventDefault();
+    var commentInput = document.getElementById("comment-input-" + postId);
+    var comment = commentInput.value;
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "../php/add_comment.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.success) {
+                var commentsDiv = document.getElementById("comments-" + postId);
+                var newComment = document.createElement("p");
+                newComment.innerHTML = "<strong>" + response.username + ":</strong> " + response.comment + " <small>(" + new Date().toLocaleString() + ")</small>";
+                commentsDiv.appendChild(newComment);
+                commentInput.value = "";
+            } else {
+                alert("Failed to add comment: " + response.message);
+            }
+        }
+    };
+    xhr.send("post_id=" + postId + "&comment=" + encodeURIComponent(comment));
 }
 </script>
